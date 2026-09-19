@@ -1,65 +1,27 @@
 import React, { useState, useEffect } from 'react'
 
-interface Flight {
-  id: number;
-  flightNumber: string;
-  airline: string;
-  departureAirportCode: string;
-  departureCity: string;
-  arrivalAirportCode: string;
-  arrivalCity: string;
-  departureTime: string;
-  arrivalTime: string;
-  price: number;
-  availableSeats: number;
-  totalSeats: number;
-  flightClass: string;
-}
-
-interface Airport {
-  code: string;
-  name: string;
-  city: string;
-  country: string;
-}
-
-interface BookingResult {
-  pnr: string;
-  flightNumber: string;
-  airline: string;
-  route: string;
-  departureTime: string;
-  seatNumber: string;
-  passengerName: string;
-  passengerEmail: string;
-  totalAmount: number;
-  status: string;
-  transactionId: string;
-  bookingDate: string;
-}
-
 export default function App() {
-  const [airports, setAirports] = useState<Airport[]>([]);
-  const [flights, setFlights] = useState<Flight[]>([]);
+  const [airports, setAirports] = useState([]);
+  const [flights, setFlights] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState('DEL');
   const [selectedDest, setSelectedDest] = useState('BLR');
   const [loading, setLoading] = useState(false);
-  const [backendHealth, setBackendHealth] = useState<'UP' | 'DOWN' | 'CHECKING'>('CHECKING');
+  const [backendHealth, setBackendHealth] = useState('CHECKING');
   
   // Booking modal state
-  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [selectedFlight, setSelectedFlight] = useState(null);
   const [seatNumber, setSeatNumber] = useState('14B');
   const [passengerName, setPassengerName] = useState('Akira Tanaka');
   const [passengerEmail, setPassengerEmail] = useState('tanaka@example.jp');
   const [passengerPassport, setPassengerPassport] = useState('JP12345678');
   const [bookingInProgress, setBookingInProgress] = useState(false);
-  const [confirmedBooking, setConfirmedBooking] = useState<BookingResult | null>(null);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   // PNR lookup state
   const [pnrInput, setPnrInput] = useState('');
-  const [pnrResult, setPnrResult] = useState<BookingResult | null>(null);
+  const [pnrResult, setPnrResult] = useState(null);
   const [pnrError, setPnrError] = useState('');
-  const [activeTab, setActiveTab] = useState<'search' | 'pnr' | 'admin'>('search');
+  const [activeTab, setActiveTab] = useState('search');
 
   // Load airports and health
   useEffect(() => {
@@ -94,7 +56,7 @@ export default function App() {
     }
   };
 
-  const loadFlights = async (origin?: string, dest?: string) => {
+  const loadFlights = async (origin, dest) => {
     setLoading(true);
     try {
       const url = origin && dest 
@@ -112,12 +74,12 @@ export default function App() {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     loadFlights(selectedOrigin, selectedDest);
   };
 
-  const handleCreateBooking = async (e: React.FormEvent) => {
+  const handleCreateBooking = async (e) => {
     e.preventDefault();
     if (!selectedFlight) return;
 
@@ -151,7 +113,7 @@ export default function App() {
     }
   };
 
-  const handleLookupPnr = async (e: React.FormEvent) => {
+  const handleLookupPnr = async (e) => {
     e.preventDefault();
     if (!pnrInput.trim()) return;
     setPnrError('');
@@ -170,7 +132,7 @@ export default function App() {
     }
   };
 
-  const handleCancelBooking = async (pnr: string) => {
+  const handleCancelBooking = async (pnr) => {
     if (!confirm(`Are you sure you want to cancel booking ${pnr}?`)) return;
     try {
       const res = await fetch(`/api/bookings/${pnr}/cancel`, { method: 'PUT' });

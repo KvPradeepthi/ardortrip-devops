@@ -21,7 +21,7 @@
                              │
                              ▼
                  ┌───────────────────────┐
-                 │    React Web UI       │ (Vite + TypeScript)
+                 │    React Web UI       │ (React + JavaScript + Vite)
                  │    Port: 3000         │
                  └───────────┬───────────┘
                              │ HTTP /api & /actuator

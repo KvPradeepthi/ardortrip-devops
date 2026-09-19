@@ -53,7 +53,7 @@ pipeline {
         stage('Frontend Lint & Build') {
             steps {
                 dir('frontend') {
-                    echo 'Building React + TypeScript production bundle...'
+                    echo 'Building React + JavaScript production bundle...'
                     sh 'npm install'
                     sh 'npm run build'
                 }
