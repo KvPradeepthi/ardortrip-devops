@@ -27,7 +27,7 @@ In accordance with social infrastructure standards (critical public systems, air
 
 ### 2.3 Frontend Tier (React 18 + JavaScript + Vite + Nginx)
 - Single Page Application built with Vite for sub-second development builds and optimized production bundling.
-- Multi-stage Docker container serving static assets through Nginx, which acts as a reverse proxy for `/api/` and `/actuator/`.
+- Containerized Nginx reverse proxy serving optimized static production assets and routing `/api/` and `/actuator/` requests to the backend.
 
 ---
 

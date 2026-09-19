@@ -35,7 +35,7 @@
          ▼                   ▼                   ▼
 ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
 │ PostgreSQL 16   │ │ Spring Actuator │ │ Mock Payment    │
-│ Relational DB   │ │ (health, promo) │ │ Instant SUCCESS │
+│ Relational DB   │ │ (health, metrics) │ │ Instant SUCCESS │
 │ Port: 5432      │ │ Port: 8080      │ │ PNR Generation  │
 └─────────────────┘ └────────┬────────┘ └─────────────────┘
                              │
@@ -60,7 +60,7 @@
 - **Application**: Modular Spring Boot 3 REST application (Java 17 LTS) with Spring Data JPA, JWT authentication, and transactional booking logic.
 - **Frontend**: Clean React 18 Single Page Application (Search -> Select -> Book -> PNR Lookup -> Cancel).
 - **Database**: PostgreSQL relational schema with foreign key constraints, indexes, and ACID transaction boundaries.
-- **Containerization**: Multi-stage Docker builds for backend and frontend with Docker Compose multi-container orchestration.
+- **Containerization**: Optimized lightweight Docker runtime images for backend and frontend with Docker Compose multi-container orchestration.
 - **Kubernetes (Local)**: Deployments with rolling updates, Services (`backend-service`), ConfigMaps, Secrets, and Actuator-based `livenessProbe` and `readinessProbe`.
 - **CI Pipeline**: Declarative `Jenkinsfile` running Maven compilation, automated JUnit 5 tests, and Docker container packaging.
 - **Monitoring & Observability**: Prometheus scraping Spring Boot Actuator and Grafana dashboard tracking JVM Heap, CPU, Latency, and HikariCP connection pool metrics.
