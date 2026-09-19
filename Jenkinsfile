@@ -99,6 +99,11 @@ pipeline {
                 sh 'kubectl apply -f k8s/backend-deployment.yaml'
                 sh 'kubectl apply -f k8s/backend-service.yaml'
                 sh 'kubectl apply -f k8s/frontend-deployment.yaml'
+                sh 'kubectl apply -f k8s/hpa.yaml'
+                sh 'kubectl apply -f k8s/ingress.yaml'
+                echo 'Propagating dynamic ECR container images to Kubernetes deployments...'
+                sh "kubectl set image deployment/flights-deployment backend=${ECR_REGISTRY}/${BACKEND_IMAGE}:${IMAGE_TAG}"
+                sh "kubectl set image deployment/frontend-deployment frontend=${ECR_REGISTRY}/${FRONTEND_IMAGE}:${IMAGE_TAG}"
             }
         }
 
@@ -112,8 +117,21 @@ pipeline {
                 sh 'kubectl rollout status deployment/frontend-deployment --timeout=90s'
                 sh 'kubectl get pods -l app=ardortrip-backend'
                 sh 'kubectl get services'
-                echo 'Running automated health check probe...'
-                sh 'python scripts/health_check.py http://localhost:8080'
+                echo 'Running automated health check probe via temporary port-forward...'
+                sh '''
+                    kubectl port-forward svc/backend-service 18080:8080 > /dev/null 2>&1 &
+                    PF_PID=$!
+                    trap 'kill $PF_PID 2>/dev/null || true' EXIT
+                    python -c "import socket, time; s = time.time();
+while time.time() - s < 15:
+    try:
+        socket.create_connection(('127.0.0.1', 18080), timeout=1).close(); break
+    except OSError:
+        time.sleep(0.5)
+else:
+    raise SystemExit('Timed out waiting for port-forward on port 18080')"
+                    python scripts/health_check.py http://localhost:18080
+                '''
             }
         }
     }
