@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rds-url
+  labels:
+    app: ardortrip
+data:
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "ardortrip"
+  SPRING_PROFILES_ACTIVE: "prod"
+  RDS_URL: "jdbc:postgresql://postgres-service:5432/ardortrip"
