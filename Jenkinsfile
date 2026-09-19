@@ -71,14 +71,19 @@ pipeline {
         // ==========================================
         // STAGE 2: CONTINUOUS DEPLOYMENT (CD - AWS / K8s)
         // ==========================================
-        stage('Tag for AWS ECR') {
+        stage('Push to AWS ECR') {
             when {
                 branch 'main'
             }
             steps {
-                echo 'Tagging images for AWS Elastic Container Registry (ECR)...'
-                sh "docker tag ${BACKEND_IMAGE}:${IMAGE_TAG} ${ECR_REGISTRY}/${BACKEND_IMAGE}:${IMAGE_TAG}"
-                sh "docker tag ${FRONTEND_IMAGE}:${IMAGE_TAG} ${ECR_REGISTRY}/${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                echo 'Authenticating with AWS ECR and pushing container images...'
+                sh """
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                    docker tag ${BACKEND_IMAGE}:${IMAGE_TAG} ${ECR_REGISTRY}/${BACKEND_IMAGE}:${IMAGE_TAG}
+                    docker tag ${FRONTEND_IMAGE}:${IMAGE_TAG} ${ECR_REGISTRY}/${FRONTEND_IMAGE}:${IMAGE_TAG}
+                    docker push ${ECR_REGISTRY}/${BACKEND_IMAGE}:${IMAGE_TAG}
+                    docker push ${ECR_REGISTRY}/${FRONTEND_IMAGE}:${IMAGE_TAG}
+                """
             }
         }
 
@@ -87,14 +92,13 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Deploying application to Kubernetes cluster...'
+                echo 'Deploying application manifests to Kubernetes cluster...'
                 sh 'kubectl apply -f k8s/configmap.yaml'
                 sh 'kubectl apply -f k8s/secret.yaml'
                 sh 'kubectl apply -f k8s/postgres-deployment.yaml'
                 sh 'kubectl apply -f k8s/backend-deployment.yaml'
                 sh 'kubectl apply -f k8s/backend-service.yaml'
                 sh 'kubectl apply -f k8s/frontend-deployment.yaml'
-                sh 'kubectl apply -f k8s/frontend-service.yaml'
             }
         }
 
@@ -103,8 +107,9 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Verifying rollout and probe health...'
+                echo 'Verifying rollout status and probe health...'
                 sh 'kubectl rollout status deployment/flights-deployment --timeout=90s'
+                sh 'kubectl rollout status deployment/frontend-deployment --timeout=90s'
                 sh 'kubectl get pods -l app=ardortrip-backend'
                 sh 'kubectl get services'
                 echo 'Running automated health check probe...'
