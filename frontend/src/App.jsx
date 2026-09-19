@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 export default function App() {
   const [airports, setAirports] = useState([]);
   const [flights, setFlights] = useState([]);
@@ -32,7 +34,7 @@ export default function App() {
 
   const checkHealth = async () => {
     try {
-      const res = await fetch('/actuator/health');
+      const res = await fetch(`${API_BASE}/actuator/health`);
       if (res.ok) {
         const data = await res.json();
         setBackendHealth(data.status === 'UP' ? 'UP' : 'DOWN');
@@ -46,7 +48,7 @@ export default function App() {
 
   const loadAirports = async () => {
     try {
-      const res = await fetch('/api/airports');
+      const res = await fetch(`${API_BASE}/api/airports`);
       if (res.ok) {
         const data = await res.json();
         setAirports(data);
@@ -60,8 +62,8 @@ export default function App() {
     setLoading(true);
     try {
       const url = origin && dest 
-        ? `/api/flights/search?origin=${origin}&destination=${dest}`
-        : '/api/flights';
+        ? `${API_BASE}/api/flights/search?origin=${origin}&destination=${dest}`
+        : `${API_BASE}/api/flights`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
@@ -85,7 +87,7 @@ export default function App() {
 
     setBookingInProgress(true);
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch(`${API_BASE}/api/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -120,7 +122,7 @@ export default function App() {
     setPnrResult(null);
 
     try {
-      const res = await fetch(`/api/bookings/${pnrInput.trim().toUpperCase()}`);
+      const res = await fetch(`${API_BASE}/api/bookings/${pnrInput.trim().toUpperCase()}`);
       if (res.ok) {
         const data = await res.json();
         setPnrResult(data);
@@ -135,7 +137,7 @@ export default function App() {
   const handleCancelBooking = async (pnr) => {
     if (!confirm(`Are you sure you want to cancel booking ${pnr}?`)) return;
     try {
-      const res = await fetch(`/api/bookings/${pnr}/cancel`, { method: 'PUT' });
+      const res = await fetch(`${API_BASE}/api/bookings/${pnr}/cancel`, { method: 'PUT' });
       if (res.ok) {
         const data = await res.json();
         if (pnrResult && pnrResult.pnr === pnr) {
