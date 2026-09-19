@@ -7,11 +7,10 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-326CE5.svg)](https://kubernetes.io/)
 [![Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins%20Declarative-D24939.svg)](https://www.jenkins.io/)
 [![Prometheus](https://img.shields.io/badge/Metrics-Prometheus-E6522C.svg)](https://prometheus.io/)
-[![Grafana](https://img.shields.io/badge/APM-Grafana%20Dashboards-F46800.svg)](https://grafana.com/)
-[![AWS](https://img.shields.io/badge/Cloud-AWS%20(ECR%20%7C%20EKS%20%7C%20RDS)-FF9900.svg)](https://aws.amazon.com/)
+[![Grafana](https://img.shields.io/badge/Monitoring-Grafana%20Dashboard-F46800.svg)](https://grafana.com/)
 
-> **Project Statement**:  
-> *"This project was developed by referencing the comprehensive academic architecture for a DevOps-transformed airline booking system and independently rebuilding and deploying the core application and DevOps pipeline. The implementation focuses on an end-to-end engineering lifecycle: Java 17 Spring Boot REST API, PostgreSQL database, React web interface, multi-stage Docker containerization, Kubernetes orchestration with liveness/readiness probes, Jenkins CI/CD, and Prometheus/Grafana application performance monitoring (APM)."*
+> **Project Description**:  
+> A working end-to-end DevOps implementation of an airline booking system demonstrating modular application development, containerization, CI/CD automation, Kubernetes orchestration, and monitoring. Built using Java 17, Spring Boot 3, PostgreSQL, React, Docker, Kubernetes, Jenkins, and Prometheus/Grafana.
 
 ---
 
@@ -28,16 +27,16 @@
                              │ HTTP /api & /actuator
                              ▼
                  ┌───────────────────────┐
-                 │   Spring Boot 3 REST  │ (Java 17 LTS)
-                 │   Port: 8080          │
+                 │  Spring Boot REST API │ (Java 17 LTS, Spring Boot 3)
+                 │  Port: 8080           │ (Modular Monolithic Backend)
                  └─────┬─────┬─────┬─────┘
                        │     │     │
          ┌─────────────┘     │     └─────────────┐
          ▼                   ▼                   ▼
 ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
 │ PostgreSQL 16   │ │ Spring Actuator │ │ Mock Payment    │
-│ Relational DB   │ │ /prometheus     │ │ Txn Simulation  │
-│ Port: 5432      │ │ Port: 8080      │ │ Instant PNR     │
+│ Relational DB   │ │ (health, promo) │ │ Instant SUCCESS │
+│ Port: 5432      │ │ Port: 8080      │ │ PNR Generation  │
 └─────────────────┘ └────────┬────────┘ └─────────────────┘
                              │
                              ▼
@@ -55,103 +54,31 @@
 
 ---
 
-## 🚀 DevOps CI/CD Pipeline
+## 🚀 Implementation Stages: Current vs. Roadmap
 
-```
-Developer Push ──► GitHub Repository
-                         │
-                         ▼
-                    Jenkins CI
-                         │
-        ┌────────────────┼────────────────┐
-        ▼                ▼                ▼
-   Maven Build      Unit Tests       Docker Build
- (Java 17 target)  (JUnit 5 Mock)   (Multi-stage)
-        │                │                │
-        └────────────────┼────────────────┘
-                         ▼
-             Stage 1 (Local Verification)
-             Docker Compose Stack
-             Kubernetes Deployments + Probes
-                         │
-                         ▼
-             Stage 2 (Cloud Progression)
-             Tag & Push to AWS ECR
-             Deploy to AWS EKS Cluster
-             Managed AWS RDS PostgreSQL
-```
+### Stage 1: Verified Local Development & DevOps (Current Implementation)
+- **Application**: Modular Spring Boot 3 REST application (Java 17 LTS) with Spring Data JPA, JWT authentication, and transactional booking logic.
+- **Frontend**: Clean React 18 Single Page Application (Search -> Select -> Book -> PNR Lookup -> Cancel).
+- **Database**: PostgreSQL relational schema with foreign key constraints, indexes, and ACID transaction boundaries.
+- **Containerization**: Multi-stage Docker builds for backend and frontend with Docker Compose multi-container orchestration.
+- **Kubernetes (Local)**: Deployments with rolling updates, Services (`backend-service`), ConfigMaps, Secrets, and Actuator-based `livenessProbe` and `readinessProbe`.
+- **CI Pipeline**: Declarative `Jenkinsfile` running Maven compilation, automated JUnit 5 tests, and Docker container packaging.
+- **Monitoring & Observability**: Prometheus scraping Spring Boot Actuator and Grafana dashboard tracking JVM Heap, CPU, Latency, and HikariCP connection pool metrics.
 
----
-
-## 📂 Repository Layout
-
-```
-ardortrip-devops/
-├── backend/                       # Spring Boot 3 Java 17 REST API
-│   ├── src/main/java/com/ardortrip/
-│   │   ├── config/               # Security, JWT Token Filter, WebMvc
-│   │   ├── controller/           # Auth, Flight, Booking, Airport APIs
-│   │   ├── dto/                  # Request/Response DTOs
-│   │   ├── model/                # JPA Entities (User, Flight, Booking, etc.)
-│   │   ├── repository/           # Spring Data JPA Repositories
-│   │   └── service/              # Business logic & mock payments
-│   ├── src/main/resources/       # application.yml (H2 dev + Postgres prod)
-│   ├── src/test/java/            # Automated JUnit 5 test suite
-│   ├── pom.xml                   # Maven dependencies & build plugins
-│   └── Dockerfile                # Multi-stage Dockerfile (JRE 17)
-│
-├── frontend/                      # React 18 + Vite Web Application
-│   ├── src/                      # Flight search, booking modal, PNR lookup
-│   ├── package.json              # React dependencies
-│   ├── nginx.conf                # Production reverse proxy config
-│   └── Dockerfile                # Multi-stage Node + Nginx build
-│
-├── database/                      # Relational Database Design
-│   ├── schema.sql                # PostgreSQL DDL with indexes & FK constraints
-│   └── seed-data.sql             # Routes connecting India, Japan, and USA
-│
-├── k8s/                           # Kubernetes Orchestration Manifests
-│   ├── configmap.yaml            # Environment variables & DB connection string
-│   ├── secret.yaml               # Encrypted credentials & JWT secret
-│   ├── backend-deployment.yaml   # Deployments with Liveness/Readiness probes
-│   ├── backend-service.yaml      # ClusterIP Service
-│   ├── frontend-deployment.yaml  # Web UI Deployment & NodePort Service
-│   ├── postgres-deployment.yaml  # Local K8s PostgreSQL Pod & Service
-│   ├── ingress.yaml              # Nginx Ingress Controller routing & CORS
-│   └── hpa.yaml                  # Horizontal Pod Autoscaler (CPU 75%)
-│
-├── monitoring/                    # Observability & APM Stack
-│   ├── prometheus.yml            # Scrape config for /actuator/prometheus
-│   └── grafana/                  # Auto-provisioned Grafana datasource & dashboard
-│
-├── scripts/                       # Python DevOps Automation
-│   ├── health_check.py           # Automated smoke test for CI/CD pipelines
-│   └── traffic_generator.py      # Generates load for Prometheus/Grafana
-│
-├── terraform/                     # AWS Infrastructure as Code (Stage 2)
-│   ├── main.tf                   # VPC, Subnets, ECR, EKS, RDS definitions
-│   └── variables.tf              # Region (Tokyo default) and credentials
-│
-├── docker-compose.yml             # Single-command local orchestration
-├── Jenkinsfile                    # Declarative CI/CD pipeline definition
-└── docs/                          # YCC Systems Engineer Defense Kit
-    ├── ARCHITECTURE.md           # Detailed architecture & data flow
-    ├── YCC_INTERVIEW_PREP.md     # 30s/2m/5m pitches, tech Q&A, culture fit
-    └── PRESENTATION_SLIDES.md    # 18-slide presentation deck
-```
+### Stage 2: AWS Cloud Deployment & CD (Planned / Extension)
+- **AWS ECR**: Remote Docker container image registry.
+- **AWS EKS**: Managed Kubernetes cluster deployment.
+- **AWS RDS**: Managed PostgreSQL database instance.
+- **Jenkins CD**: Automated CD pipeline triggering remote ECR push and rolling rollout to EKS.
+- **Terraform**: Declarative Infrastructure as Code (VPC, Subnets, ECR repositories, RDS).
 
 ---
 
 ## ⚡ Getting Started Locally
 
-### Prerequisites
-- Java 17 LTS & Maven 3.9+
-- Node.js 18+ & npm
-- Docker & Docker Compose (optional, for full containerized stack)
+### Option A: Run Natively (Dev Profile)
 
-### Option A: Run Natively (Dev Mode)
-
-1. **Start Backend (uses in-memory H2 with pre-seeded data)**:
+1. **Start Backend (In-Memory H2 with Seed Data)**:
    ```bash
    cd backend
    mvn clean test
@@ -167,26 +94,20 @@ ardortrip-devops/
    ```
    *Frontend running at `http://localhost:3000`*
 
-3. **Verify Health**:
-   ```bash
-   python scripts/health_check.py http://localhost:8080
-   ```
-
 ---
 
-### Option B: Run Multi-Container Stack with Docker Compose
+### Option B: Run with Docker Compose
 
-Start the full stack (PostgreSQL + Spring Boot + React + Prometheus + Grafana):
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
-**Service URLs**:
-- **Web Application**: `http://localhost:3000`
-- **Spring Boot API**: `http://localhost:8080/api/flights`
-- **Actuator Health**: `http://localhost:8080/actuator/health`
-- **Prometheus Metrics**: `http://localhost:9090`
-- **Grafana Dashboard**: `http://localhost:3001` *(User: `admin` / Password: `admin`)*
+**Service Access**:
+- Web UI: `http://localhost:3000`
+- REST API: `http://localhost:8080/api/flights`
+- Actuator Health: `http://localhost:8080/actuator/health`
+- Prometheus Metrics: `http://localhost:9090`
+- Grafana Dashboard: `http://localhost:3001` *(User: `admin` / Password: `admin`)*
 
 Generate real-time metrics for Grafana:
 ```bash
@@ -195,9 +116,7 @@ python scripts/traffic_generator.py
 
 ---
 
-## ☸️ Kubernetes Deployment
-
-Deploy to any local Kubernetes cluster (Docker Desktop / Minikube / Kind) or cloud EKS:
+## ☸️ Kubernetes Deployment (Local)
 
 ```bash
 # 1. Apply configurations and secrets
@@ -218,26 +137,15 @@ kubectl describe pod -l app=ardortrip-backend
 kubectl get services
 ```
 
+*Note: Ingress (`k8s/ingress.yaml`) and HPA (`k8s/hpa.yaml`) are optional extensions that require an active Ingress Controller and Metrics Server.*
+
 ---
 
 ## 🧪 Automated Testing
 
 ```bash
-# Backend unit & MockMvc integration tests
 cd backend
 mvn test
 ```
-- Total test cases: 6
-- Result: **0 failures, 0 errors, 100% passing**.
-
----
-
-## 🧑‍💻 Technical Defense & YCC Alignment
-
-For technical interview discussions regarding:
-- *Why Java 17 + Spring Boot 3 for enterprise reliability*
-- *Why PostgreSQL relational schema over NoSQL*
-- *How Kubernetes Liveness and Readiness probes eliminate downtime*
-- *How Prometheus and Grafana provide proactive observability for social infrastructure maintenance*
-
-See [`docs/YCC_INTERVIEW_PREP.md`](docs/YCC_INTERVIEW_PREP.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- Tests run: 6 (Application Context, BookingService seat reservation and constraint checks, FlightController MockMvc contracts).
+- Result: **100% passing, 0 failures**.

@@ -502,7 +502,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 3: DEVOPS & OBSERVABILITY (Telemetry Info for YCC) */}
+        {/* TAB 3: DEVOPS & OBSERVABILITY (Telemetry Info for ) */}
         {activeTab === 'admin' && (
           <div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#0f172a' }}>DevOps Telemetry & Architecture</h2>
@@ -666,7 +666,7 @@ export default function App() {
       {/* Footer */}
       <footer style={{ background: '#0f172a', color: '#94a3b8', padding: '2rem', textAlign: 'center', fontSize: '0.85rem' }}>
         <p>© 2026 ArdorTrip Systems | Social Infrastructure & DevOps Engineering Portfolio</p>
-        <p style={{ marginTop: '0.35rem', color: '#64748b' }}>Developed for YCC Cloud Dev & Ops Technical Evaluation</p>
+        <p style={{ marginTop: '0.35rem', color: '#64748b' }}>Airline Reservation Platform & Continuous Delivery Pipeline</p>
       </footer>
     </div>
   )

@@ -17,14 +17,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: flights-service
+                name: backend-service
                 port:
                   number: 8080
           - path: /actuator
             pathType: Prefix
             backend:
               service:
-                name: flights-service
+                name: backend-service
                 port:
                   number: 8080
           - path: /

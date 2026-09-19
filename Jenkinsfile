@@ -11,7 +11,7 @@ pipeline {
         BACKEND_IMAGE   = 'ardortrip-backend'
         FRONTEND_IMAGE  = 'ardortrip-frontend'
         IMAGE_TAG       = "${env.BUILD_NUMBER ?: '1.0.0'}"
-        AWS_REGION      = 'ap-northeast-1' // Tokyo Region (YCC)
+        AWS_REGION      = 'ap-northeast-1' // Tokyo Region
         AWS_ACCOUNT_ID  = '123456789012'
         ECR_REGISTRY    = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
     }

@@ -42,6 +42,11 @@ spec:
                 secretKeyRef:
                   name: rds-secret
                   key: DB_USER
+                        - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: rds-secret
+                  key: JWT_SECRET
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:

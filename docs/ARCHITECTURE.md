@@ -2,7 +2,7 @@
 
 ## 1. Architectural Philosophy
 In accordance with social infrastructure standards (critical public systems, airline booking, medical administration), ArdorTrip is engineered around three non-negotiable principles:
-1. **Reliability & Zero Downtime**: Decoupled microservice architecture, stateless application tiers, automated health probes, and rolling updates.
+1. **Reliability & Zero Downtime**: Modular, decoupled application architecture, stateless application tiers, automated health probes, and rolling updates.
 2. **Data Integrity & Consistency**: Relational database (PostgreSQL) enforcing ACID transactions, seat decrement locks, unique booking reference codes (PNR), and foreign key audit constraints.
 3. **Proactive Observability**: Built-in instrumentation exposing real-time metrics (JVM memory, thread pools, response latency, database connection pools) directly to Prometheus and Grafana.
 

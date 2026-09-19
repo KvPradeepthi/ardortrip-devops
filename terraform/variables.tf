@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "AWS deployment region (Tokyo default for YCC)"
+  description = "AWS deployment region"
   type        = string
   default     = "ap-northeast-1"
 }
@@ -11,8 +11,8 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  description = "Database administrator password"
+  description = "Database administrator password (pass via TF_VAR_db_password or tfvars)"
   type        = string
   sensitive   = true
-  default     = "ardor_secure_pass"
+  default     = null
 }
