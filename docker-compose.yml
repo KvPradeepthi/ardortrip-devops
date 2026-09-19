@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # 1. Relational Database: PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    container_name: ardortrip-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ardortrip
+      POSTGRES_USER: ardor_user
+      POSTGRES_PASSWORD: ardor_secure_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed-data.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ardor_user -d ardortrip"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ardortrip-net
+
+  # 2. Backend REST API: Spring Boot (Java 17 LTS)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ardortrip-backend:1.0.0
+    container_name: ardortrip-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://postgres:5432/ardortrip
+      DB_USER: ardor_user
+      DB_PASSWORD: ardor_secure_pass
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+    networks:
+      - ardortrip-net
+
+  # 3. Web UI: React + Nginx Reverse Proxy
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ardortrip-frontend:1.0.0
+    container_name: ardortrip-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - ardortrip-net
+
+  # 4. Telemetry Collector: Prometheus
+  prometheus:
+    image: prom/prometheus:v2.53.1
+    container_name: ardortrip-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - ardortrip-net
+
+  # 5. Telemetry Visualizer: Grafana
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: ardortrip-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3001:3000"
+    networks:
+      - ardortrip-net
+
+networks:
+  ardortrip-net:
+    driver: bridge
+
+volumes:
+  pgdata:
