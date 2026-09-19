@@ -46,3 +46,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.iml
+
+# Confidential Interview Preparation and Presentation Materials
+docs/YCC_INTERVIEW_PREP.md
+docs/PRESENTATION_SLIDES.md
+
