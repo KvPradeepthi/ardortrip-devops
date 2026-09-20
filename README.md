@@ -14,7 +14,7 @@
 
 ---
 
-## 🌐 Live Cloud Demonstration ($0 / ₹0 Free Tier)
+## 🌐 Live Cloud Demonstration 
 
 | Service | Platform | Live URL | Status |
 | :--- | :--- | :--- | :--- |
