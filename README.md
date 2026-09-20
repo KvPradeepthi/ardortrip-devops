@@ -14,6 +14,17 @@
 
 ---
 
+## 🌐 Live Cloud Demonstration ($0 / ₹0 Free Tier)
+
+| Service | Platform | Live URL | Status |
+| :--- | :--- | :--- | :--- |
+| **Frontend UI** | Vercel (Hobby) | [https://ardortrip.vercel.app](https://ardortrip.vercel.app) | 🟢 Live |
+| **Backend REST API** | Render (Docker) | [https://ardortrip-backend.onrender.com](https://ardortrip-backend.onrender.com) | 🟢 Live |
+| **Relational Database** | Render (PostgreSQL 16) | Private Cloud Network (Oregon) | 🟢 Connected & Seeded |
+| **Actuator Health** | Render | [https://ardortrip-backend.onrender.com/actuator/health](https://ardortrip-backend.onrender.com/actuator/health) | 🟢 UP |
+
+---
+
 ## 🏛️ System Architecture
 
 ```
